@@ -13,12 +13,13 @@ def sync_folders(source: Path, copy: Path):
         copy.mkdir()
     for i in source.glob("**\*"):
         if i.is_file():
-            log.set_verbosity(log.DEBUG)
-            file_util.copy_file(i, copy, update=1)
+            copied = file_util.copy_file(i, copy, update=1)
+            if copied[1]:
+                print(f"copied {i.absolute()} to {copy.absolute()}")
     for j in copy.glob("**\*"):
         if j.is_file():
-            if not (j in source.glob("**\*")):
-                log.set_verbosity(log.DEBUG)
+            if not (j.name in os.listdir(source)):
+                print(f"deleting {j.name} from {j.absolute()}")
                 os.remove(j)
             
 
@@ -63,7 +64,6 @@ def main():
 if __name__ == "__main__":
     run_counter = 0
     result = main()
-    print(result)
     # schedule.every(int(sys.argv[3])).seconds.do(main)
     # while True:
     #     schedule.run_pending()
